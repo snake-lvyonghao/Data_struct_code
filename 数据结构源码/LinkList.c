@@ -97,7 +97,7 @@ void ListDelet(PNode L,int i){
     q = NULL;       //回收野指针
 }
 
-//算法2.11
+//算法2.11 合并链表La，Lb 到La
 void MergeList_L(PNode La,PNode Lb){
     while(La->Next != NULL){    //链表La，Lb合并到 La
         La = La->Next;
@@ -141,7 +141,6 @@ DuNode CreativeDuList(){
         scanf("%d", &val);    //    输入链表节点的数据
 
         dNew->Element = val;    //    把数据赋值给节点数据域
-
         DTail->Next = dNew;    //    末尾节点指针指向下一个新节点
         dNew->Next = NULL;        //    新节点next指针指向为空
         dNew->prior = DTail;        //新节点prior指针指向尾结点
@@ -164,18 +163,48 @@ void TraverseDlist(DuNode List) {
     printf("\n");
 }
 
-//算法 2.1 双线链表
+//算法 2.18 双向链表插入元素
+void ListDinsert(DuNode L, int i,int e){
+    int j = 0;
+    DuNode p = L;   //定义结点p指向头节点
+    while(j < i && p != NULL){        //找到插入节点的后继
+        p = p->Next;
+        j++;
+    }
+    DuNode s = (DuNode)malloc(sizeof(DNode));       //分配一块内存给新节点
+    s->Element = e;     //赋值给新节点
+    s->prior = p->prior;    //新节点的prior指向第i位置的prior
+    p->prior->Next = s; //第i位置prior的next指针指向新节点
+    s->Next = p;    //新节点next指向第i节点
+    p->prior = s;   //第i节prior指向新节点
+}
+//算法2.19 双向链表删除元素
+void ListDdelet(DuNode L,int i){
+    int j = 0;
+    DuNode p = L;
+    while(p != NULL&& j < i - 1){
+        p = p->Next;
+        ++j;
+    }
+    p->Next->prior = p->prior;  //后一节点的prior为被删除节点的prior
+    p->prior->Next = p->Next;   //前一节点的next为被删除节点的next
+    free(p);        //回收内存
+    p = NULL;       //回收野指针
+}
 //    主函数
 int main() {
-    PNode List = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
-    ListInsert(List,3,5);   //在第1个位置前加入结点值为5
-    TraverseList(List);     //打印链表
-    PNode List2 = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
-    MergeList_L(List,List2);
-    TraverseList(List);     //打印链表
-    ListDelet(List,3); //删除结点
-    TraverseList(List);     //打印链表
+//    PNode List = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
+//    ListInsert(List,3,5);   //在第1个位置前加入结点值为5
+//    TraverseList(List);     //打印链表
+//    PNode List2 = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
+//    MergeList_L(List,List2);
+//    TraverseList(List);     //打印链表
+//    ListDelet(List,3); //删除结点
+//    TraverseList(List);     //打印链表
     DuNode DList = CreativeDuList(); //创建双向链表
+    ListDinsert(DList,2,5);
+    TraverseDlist(DList);   //打印双向链表
+    ListDdelet(DList,3);
     TraverseDlist(DList);   //打印双向链表
     return 0;
 }

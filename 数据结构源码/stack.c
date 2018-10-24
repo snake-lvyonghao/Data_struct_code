@@ -4,7 +4,7 @@
 
 #include<stdio.h>
 #include <malloc.h>
-typedef char ElementType;        //    定义数据类型,可根据需要进行其他类型定义
+typedef int ElementType;        //    定义数据类型,可根据需要进行其他类型定义
 #define STACK_INIT_SIZE 100   //      储存空间初始分配
 #define STACKINCREMENT 10      //储存空间分配增量
 //顺序栈定义

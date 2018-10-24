@@ -29,7 +29,6 @@ PNode CreateList(void) {
     printf("请输入节点个数：");
     scanf("%d", &len);        //    输入节点个数
     for (int i = 0; i < len; i++) {
-
         PNode pNew = (PNode)malloc(sizeof(Node));    //    分配一个新节点
         if (pNew == NULL) {
             printf("分配新节点失败\n");

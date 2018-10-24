@@ -3,6 +3,7 @@ project(data_struct C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(data_struct main.c )
+add_executable(data_struct main.c 数据结构源码)
 add_executable(LinkList 数据结构源码/LinkList.c)
 add_executable(stack 数据结构源码/stack.c)
+add_executable(queue 数据结构源码/Queue.c)

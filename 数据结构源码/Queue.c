@@ -3,6 +3,7 @@
 //
 #include <stdio.h>
 #include <malloc.h>
+#define MAXQSIZE 100
 typedef int ElementType;        //    定义数据类型,可根据需要进行其他类型定义
 typedef struct QNode{
     ElementType data;
@@ -63,16 +64,73 @@ LinkQueue DestroyQueue(LinkQueue Q){
     printf("成功销毁队列\n");
     return Q;
 }
+
+//---------循环链表------------
+typedef struct {
+    ElementType *base;  //初始化的动态分配储存空间
+    int front;     //队头指针 不存放数据next指向第一个数据
+    int rear;      //队尾指针 存放最后一个数据next指向NULL
+}SqQueue;
+
+//-------------- 循环队列基本操作的算法描述-----------------
+//构造一个新队列
+SqQueue InitQueue2(SqQueue Q){
+    Q.base = (ElementType *)malloc(MAXQSIZE * sizeof(ElementType));
+    if(!Q.base){
+        printf("储存分配失败");
+        Q.front = Q.rear = 0;
+    }
+    printf("构建循环队列成功");
+    return Q;
+}
+
+//返回队列长度
+int QueeLength2(SqQueue Q){
+    return (Q.rear - Q.front + MAXQSIZE) % MAXQSIZE;
+}
+
+//插入元素e为Q的新队尾元素
+SqQueue EnQueue2(SqQueue Q,ElementType e){
+    if((Q.front + 1) % MAXQSIZE == Q.front){
+        printf("队列已满");
+    }
+    Q.base[Q.rear] = e;
+    Q.rear = (Q.rear + 1) % MAXQSIZE;
+    printf("成功插入元素\n");
+    return Q;
+}
+
+//删除队头元素
+SqQueue DeQueue2(SqQueue Q){
+    if(Q.front == Q.rear){
+        printf("删除失败");
+    }
+    Q.front = (Q.front + 1) % MAXQSIZE;
+    printf("成功消除队列头元素\n");
+    return Q;
+}
+
 int main(){
-    LinkQueue Q;
-    Q = InitQueue(Q);//创建队列
-    Q = EnQueue(Q,6);// 队列插入654
-    Q = EnQueue(Q,5);
-    Q = EnQueue(Q,4);
-    printf("%d\n",Q.rear->data);//打印队尾元素
-    Q = DeQueue(Q);     //删除队头元素
-    printf("%d\n",Q.front->next->data);     //输出队头元素
-    Q = DestroyQueue(Q);        //销毁队列
-    printf("%d %d\n",Q.rear->data,Q.front->next->data); //输出队头队尾元素（无法打印）
+    LinkQueue L;
+    L = InitQueue(L);//创建队列
+    L = EnQueue(L,6);// 队列插入654
+    L = EnQueue(L,5);
+    L = EnQueue(L,4);
+    printf("%d\n",L.rear->data);//打印队尾元素
+    L = DeQueue(L);     //删除队头元素
+    printf("%d\n",L.front->next->data);     //输出队头元素
+    L = DestroyQueue(L);        //销毁队列
+    printf("%d %d\n",L.rear->data,L.front->next->data); //输出队头队尾元素（无法打印）
+    //循环队列测试 请注释上一段进行调试
+    SqQueue Q;
+    Q = InitQueue2(Q);
+    Q = EnQueue2(Q,5);
+    printf("%d",QueeLength2(Q));
+    Q = EnQueue2(Q,6);
+    printf("%d",QueeLength2(Q));
+    Q = EnQueue2(Q,7);
+    printf("%d",QueeLength2(Q));
+    Q = DeQueue2(Q);
+    printf("%d",QueeLength2(Q));
     return 0;
 }

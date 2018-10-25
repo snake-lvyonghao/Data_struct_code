@@ -109,7 +109,7 @@ void MergeList_L(PNode La,PNode Lb){
 typedef struct DuNode {
     ElementType  Element;        //    数据域，存放数据
     struct DuNode *Next;        //    指向下一个链表节点
-    struct DuNode *prior;        //    指向下一个链表节点
+    struct DuNode *prior;        //    指向上一个链表节点
 }DNode, *DuNode;
 
 //创建双向链表

@@ -35,9 +35,9 @@ TSMatrix CreateSMatrix(){
 //打印稀疏矩阵
 void PrintSMatrix(TSMatrix T){
     int i,j,k = 1;
-    for(i = 1;i <= T.mu; i++) {
-        for (j = 1; j <= T.nu; j++) {
-            if (T.data[k].i == i && T.data[k].j == j) {
+    for(i = 1;i <= T.mu; i++) {     //行
+        for (j = 1; j <= T.nu; j++) {       //列
+            if (T.data[k].i == i && T.data[k].j == j) {     //对应ij输出e否则输出0；
                 printf("%d   ", T.data[k].e);
                 k++;
             } else {
@@ -102,12 +102,12 @@ TSMatrix FastTransposeSMatrix(TSMatrix M,TSMatrix T){
     return T;
 }
 int main(){
-    TSMatrix M = CreateSMatrix();
-    TSMatrix T;
+    TSMatrix M = CreateSMatrix();   //创建稀疏矩阵
+    TSMatrix T;                     //创建稀疏矩阵
+    PrintSMatrix(M);                //打印矩阵
+    T = TRansposeSMatrix(M,T);      //普通转置
     PrintSMatrix(M);
-    T = TRansposeSMatrix(M,T);
-    PrintSMatrix(M);
-    T = FastTransposeSMatrix(M,T);
+    T = FastTransposeSMatrix(M,T);  //快速转置
     PrintSMatrix(T);
     return 0;
 }

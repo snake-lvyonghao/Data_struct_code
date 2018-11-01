@@ -71,7 +71,7 @@ TSMatrix TRansposeSMatrix(TSMatrix M,TSMatrix T){
     return T;
 }   //TransposeSMatrix
 
-//快速转置
+//算法5.2快速转置
 TSMatrix FastTransposeSMatrix(TSMatrix M,TSMatrix T){
     //采用三元组顺序表存储表示，求稀疏矩阵M的的转置矩阵T。
     int col,t,cpot[MAXSIZE],p,q,num[MAXSIZE];

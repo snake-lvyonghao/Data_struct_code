@@ -18,12 +18,10 @@ typedef struct BiTNode{
 
 
 //先序创建二叉树
-int CreateBiTree(BiTree *T)
+void CreateBiTree(BiTree *T)
 {
     ElemType ch;
-    ElemType temp;
     scanf("%d", &ch);
-    temp = getchar();
     if (ch == -1)
         *T = NULL;
     else
@@ -39,9 +37,6 @@ int CreateBiTree(BiTree *T)
         printf("输入%d的右子节点：", ch);
         CreateBiTree(&(*T)->rChlid);
     }
-
-
-    return 1;
 }
 
 
@@ -53,8 +48,6 @@ void TraverseBiTree(BiTree T)
     printf("%d ", T->data);
     TraverseBiTree(T->lChild);
     TraverseBiTree(T->rChlid);
-
-
 }
 
 
@@ -66,8 +59,6 @@ void InOrderBiTree(BiTree T)
     InOrderBiTree(T->lChild);
     printf("%d ", T->data);
     InOrderBiTree(T->rChlid);
-
-
 }
 
 
@@ -79,8 +70,6 @@ void PostOrderBiTree(BiTree T)
     PostOrderBiTree(T->lChild);
     PostOrderBiTree(T->rChlid);
     printf("%d ", T->data);
-
-
 }
 
 

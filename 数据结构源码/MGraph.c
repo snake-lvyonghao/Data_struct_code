@@ -158,10 +158,41 @@ void print_graph(Graph G)
         printf("\n");
     }
 }
+void BFS(Graph G){
+    int head = 0;
+    int rear = 0;
+    int queue[MAX]; //辅助队列
+    int visited[MAX];   //顶点访问标记
+    int i,j,k;
+    for(i = 0;i < G.vexnum; i++){
+        visited[i] = 0;
+    }
+    printf("BFS: ");
+    for(i = 0;i < G.vexnum;i++){
+        if(!visited[i]){
+            visited[i] = 1;
+            printf("%c",G.vexs[i]);
+            queue[rear++] = i;  //入队列
+        }
+        while (head != rear){
+            j = queue[head++];  //出队列
+            for(k  =first_vertex(G,j); k >= 0;k = next_vertix(G,j,k))   //k是访问的邻接结点
+            {
+                if(!visited[k]){
+                    visited[k] = 1;
+                    printf("%c",G.vexs[k]);
+                    queue[rear++] = k;
+                }
+            }
+        }
+    }
+    printf("\n");
+}
 int main(){
     Graph *pG;
     pG = create_graph();
     print_graph(*pG);
     DFSTraverse(*pG);
+    BFS(*pG);
     return 0;
 }

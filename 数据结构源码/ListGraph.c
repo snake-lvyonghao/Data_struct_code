@@ -161,6 +161,39 @@ void DFSTraverse(LGraph G){
     printf("\n");
 }
 
+void BFS(LGraph G){
+    int head = 0;
+    int rear = 0;
+    int queue[MAX]; //辅助队列
+    int visited[MAX];   //顶点访问标记
+    int i,j,k;
+    ENode *node;
+    for(i = 0;i < G.vexnum; i++){
+        visited[i] = 0;
+    }
+    printf("BFS: ");
+    for(i = 0;i < G.vexnum;i++){
+        if(!visited[i]){
+            visited[i] = 1;
+            printf("%c",G.vexs[i].data);
+            queue[rear++] = i;  //入队列
+        }
+        while (head != rear){
+            j = queue[head++];  //出队列
+            node = G.vexs[j].first_edge;
+            while (node ! =NULL){
+                k = node->ivex;
+                if(!visited[k]){
+                    visited[k] = 1;
+                    printf("%c"G.vexs[k].data);
+                    queue[rear++] = k;
+                }
+                node = node->next_edge;
+            }
+        }
+    }
+    printf("\n");
+}
 //打印矩形队列图
 void print_lgraph(LGraph G)
 {

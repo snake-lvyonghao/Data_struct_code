@@ -70,9 +70,9 @@ LGraph* create_lgraph()
     LGraph* pG;
 
     // 输入"顶点数"和"边数"
-    printf("input vertex number: ");
+    printf("输入顶点数: ");
     scanf("%d", &v);
-    printf("input edge number: ");
+    printf("输入边数: ");
     scanf("%d", &e);
     if ( v < 1 || e < 1 || (e > (v * (v-1))))
     {

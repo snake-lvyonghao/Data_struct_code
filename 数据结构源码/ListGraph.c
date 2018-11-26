@@ -59,20 +59,20 @@ static void link_last(ENode *list,ENode *node){
     p->next_edge = node;
 }
 
-
 //创建图
 LGraph* create_lgraph()
 {
     char c1, c2;
     int v, e;
     int i, p1, p2;
+    int weight;
     ENode *node1, *node2;
     LGraph* pG;
 
     // 输入"顶点数"和"边数"
-    printf("输入顶点数: ");
+    printf("input vertex number: ");
     scanf("%d", &v);
-    printf("输入边数: ");
+    printf("input edge number: ");
     scanf("%d", &e);
     if ( v < 1 || e < 1 || (e > (v * (v-1))))
     {
@@ -90,7 +90,7 @@ LGraph* create_lgraph()
     // 初始化"邻接表"的顶点
     for(i=0; i<pG->vexnum; i++)
     {
-        printf("vertex(%d): ", i + 1);
+        printf("vertex(%d): ", i);
         pG->vexs[i].data = read_char();
         pG->vexs[i].first_edge = NULL;
     }
@@ -98,17 +98,19 @@ LGraph* create_lgraph()
     // 初始化"邻接表"的边
     for(i=0; i<pG->edgnum; i++)
     {
-        // 读取边的起始顶点和结束顶点
-        printf("edge(%d): ", i + 1);
+        // 读取边的起始顶点,结束顶点,权
+        printf("edge(%d): ", i);
         c1 = read_char();
         c2 = read_char();
+        scanf("%d", &weight);
 
-        p1 = get_postition(*pG, c1);
-        p2 = get_postition(*pG, c2);
+        p1 = get_position(*pG, c1);
+        p2 = get_position(*pG, c2);
 
         // 初始化node1
         node1 = (ENode*)malloc(sizeof(ENode));
         node1->ivex = p2;
+        node1->weight = weight;
         // 将node1链接到"p1所在链表的末尾"
         if(pG->vexs[p1].first_edge == NULL)
             pG->vexs[p1].first_edge = node1;
@@ -117,6 +119,7 @@ LGraph* create_lgraph()
         // 初始化node2
         node2 = (ENode*)malloc(sizeof(ENode));
         node2->ivex = p1;
+        node2->weight = weight;
         // 将node2链接到"p2所在链表的末尾"
         if(pG->vexs[p2].first_edge == NULL)
             pG->vexs[p2].first_edge = node2;
@@ -211,10 +214,116 @@ void print_lgraph(LGraph G)
         printf("\n");
     }
 }
+/*
+ * 获取G中边<start, end>的权值；若start和end不是连通的，则返回无穷大。
+ */
+int getWeight(LGraph G, int start, int end)
+{
+    ENode *node;
+
+    if (start==end)
+        return 0;
+
+    node = G.vexs[start].first_edge;
+    while (node!=NULL)
+    {
+        if (end==node->ivex)
+            return node->weight;
+        node = node->next_edge;
+    }
+
+    return INF;
+}
+
+/*
+ * prim最小生成树
+ *
+ * 参数说明：
+ *       G -- 邻接表图
+ *   start -- 从图中的第start个元素开始，生成最小树
+ */
+void prim(LGraph G, int start)
+{
+    int min,i,j,k,m,n,tmp,sum;
+    int index=0;         // prim最小树的索引，即prims数组的索引
+    char prims[MAX];     // prim最小树的结果数组
+    int weights[MAX];    // 顶点间边的权值
+
+    // prim最小生成树中第一个数是"图中第start个顶点"，因为是从start开始的。
+    prims[index++] = G.vexs[start].data;
+
+    // 初始化"顶点的权值数组"，
+    // 将每个顶点的权值初始化为"第start个顶点"到"该顶点"的权值。
+    for (i = 0; i < G.vexnum; i++ )
+        weights[i] = getWeight(G, start, i);
+
+    for (i = 0; i < G.vexnum; i++)
+    {
+        // 由于从start开始的，因此不需要再对第start个顶点进行处理。
+        if(start == i)
+            continue;
+
+        j = 0;
+        k = 0;
+        min = INF;
+        // 在未被加入到最小生成树的顶点中，找出权值最小的顶点。
+        while (j < G.vexnum)
+        {
+            // 若weights[j]=0，意味着"第j个节点已经被排序过"(或者说已经加入了最小生成树中)。
+            if (weights[j] != 0 && weights[j] < min)
+            {
+                min = weights[j];
+                k = j;
+            }
+            j++;
+        }
+
+        // 经过上面的处理后，在未被加入到最小生成树的顶点中，权值最小的顶点是第k个顶点。
+        // 将第k个顶点加入到最小生成树的结果数组中
+        prims[index++] = G.vexs[k].data;
+        // 将"第k个顶点的权值"标记为0，意味着第k个顶点已经排序过了(或者说已经加入了最小树结果中)。
+        weights[k] = 0;
+        // 当第k个顶点被加入到最小生成树的结果数组中之后，更新其它顶点的权值。
+        for (j = 0 ; j < G.vexnum; j++)
+        {
+            // 获取第k个顶点到第j个顶点的权值
+            tmp = getWeight(G, k, j);
+            // 当第j个节点没有被处理，并且需要更新时才被更新。
+            if (weights[j] != 0 && tmp < weights[j])
+                weights[j] = tmp;
+        }
+    }
+
+    // 计算最小生成树的权值
+    sum = 0;
+    for (i = 1; i < index; i++)
+    {
+        min = INF;
+        // 获取prims[i]在G中的位置
+        n = get_position(G, prims[i]);
+        // 在vexs[0...i]中，找出到j的权值最小的顶点。
+        for (j = 0; j < i; j++)
+        {
+            m = get_position(G, prims[j]);
+            tmp = getWeight(G, m, n);
+            if (tmp < min)
+                min = tmp;
+        }
+        sum += min;
+    }
+    // 打印最小生成树
+    printf("PRIM(%c)=%d: ", G.vexs[start].data, sum);
+    for (i = 0; i < index; i++)
+        printf("%c ", prims[i]);
+    printf("\n");
+}
+
 int main(){
     LGraph *pG;
     pG = create_lgraph();
     print_lgraph(*pG);
     DFSTraverse(*pG);
+    BFS(*pG);
+    prim(*pG, 0);           // prim算法生成最小生成树
     return 0;
 }

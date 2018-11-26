@@ -4,7 +4,10 @@
 #include <string.h>
 
 #define MAX 100
+#define INF (~(0x1<<31))        //最大值0X7FFFFFFF
 #define isLetter(a) ((((a) >= 'a') && ((a) <= 'z')) || (((a) >= 'A') && ((a) <= 'Z')))      //a - A,z - Z
+#define LENGTH(a) (sizeof(a)/sizeof(a[0]))
+
 //邻接矩阵
 typedef struct _graph
 {
@@ -41,7 +44,7 @@ static char read_char(){
 Graph* create_graph(){
     char c1,c2;
     int v,e;    //顶点与边
-    int i,p1,p2;
+    int i,j,p1,p2,weight;
     Graph* pG;
 
     //输入定点数和边数
@@ -67,13 +70,23 @@ Graph* create_graph(){
         printf("vertex(%d): ",i + 1);
         pG->vexs[i] = read_char();
     }
-
+    //初始化"边"的权值
+    for (int i = 0; i < pG->vexnum; ++i) {
+        for (j = 0; j < pG->vexnum; ++j) {
+            if(i == j){
+                pG->matrix[i][j] = 0;
+            } else
+                pG->matrix[i][j] = INF;
+        }
+    }
     //初始化边
     for(i = 0; i < pG->edgnum; i++){
         //读取边的起始位置和结束顶点
         printf("edge(%d):",i + 1);
         c1 = read_char();
         c2 = read_char();
+        printf("weight(%d):",i + 1);
+        scanf("%d",&weight);
 
         p1 = get_postition(*pG,c1);
         p2 = get_postition(*pG,c2);
@@ -83,8 +96,8 @@ Graph* create_graph(){
             return NULL;
         }
 
-        pG->matrix[p1][p2] = 1;
-        pG->matrix[p2][p1] = 1;
+        pG->matrix[p1][p2] = weight;
+        pG->matrix[p2][p1] = weight;
     }
     return pG;
 }
@@ -164,7 +177,7 @@ void BFS(Graph G){
     int queue[MAX]; //辅助队列
     int visited[MAX];   //顶点访问标记
     int i,j,k;
-    for(i = 0;i < G.vexnum; i++){
+    for(i = 0;i < G.vexnum; i++){   //初始化访问数组
         visited[i] = 0;
     }
     printf("BFS: ");
@@ -176,7 +189,7 @@ void BFS(Graph G){
         }
         while (head != rear){
             j = queue[head++];  //出队列
-            for(k  =first_vertex(G,j); k >= 0;k = next_vertix(G,j,k))   //k是访问的邻接结点
+            for(k  = first_vertex(G,j); k >= 0;k = next_vertix(G,j,k))   //k是访问的邻接结点
             {
                 if(!visited[k]){
                     visited[k] = 1;
@@ -188,11 +201,95 @@ void BFS(Graph G){
     }
     printf("\n");
 }
+
+/*
+ *      prim最小生成树
+ *
+ *      参数说明：
+ *              G -- 邻接矩阵图
+ *          start -- 从图中第start个元素开始，生成最小树
+ *
+ */
+void prim(Graph G,int start)
+{
+    int min,i,j,k,m,n,sum;
+    int index = 0;          //prim最小生成树索引
+    char prims[MAX];        //最小生成树结果
+    int weights[MAX];       //顶点间边的权值
+
+    //prim最小生成树中第一个数是图中第start个顶点，因为是从start开始的
+    prims[index++] = G.vexs[start];
+
+    //初始化"顶点的权值数组"
+    //将每个顶点的权值初始化为第start个顶点到该顶点的权值
+    for (int i = 0; i < G.vexnum; ++i) {
+        weights[i] = G.matrix[start][i];
+    }
+
+    //将start到start设置为0
+    weights[start] = 0;
+
+    for (int i = 0; i < G.vexnum; ++i) {
+        //由于从start开始，因此不需要在对第start个顶点处理。
+        if(start == i){
+            continue;
+        }
+
+        j = 0;
+        k = 0;
+        min = INF;
+        //在未被加入到最小生成树的顶点中，找出权值最小的顶点
+        while(j < G.vexnum){
+            //若weights【j】 = 0，意味着第j个顶点已经被排序过（或者说已经加入了最小生成树）
+            if (weights[j] != 0 && weights[j] < min){
+                min = weights[j];
+                k = j;
+            }
+            j++;
+        }
+
+        //经过上面的处理后，在为被加入最小生成树的顶点中，权值最小的定点是第k个顶点
+        //将k个顶点加入到最小生成树的结果数组中
+        prims[index++] = G.vexs[k];
+        //将第k个顶点的权值标记为0，意味着第k个顶点已经排序过了
+        weights[k] = 0;
+        //当第k个顶点被加入到最小生成树的结果数组中之后，更新其他的顶点权值
+        for (int j = 0; j < G.vexnum; ++j) {
+            //当第j个结点没有被处理，并且需要实时更新
+            if (weights[j] != 0 && G.matrix[k][j] < weights[j])
+                weights[j] = G.matrix[k][j];
+        }
+    }
+
+    //计算最小生成树的权值
+    sum = 0;
+    for (int i = 1; i < index; ++i) {
+        min = INF;
+        //获取prims[i]在G中的位置
+        n = get_postition(G,prims[i]);
+        //在vexs【0.。。i】中，找出到j的权值最小的顶点
+        for (int j = 0; j < i; ++j) {
+            m = get_postition(G,prims[i]);
+            if(G.matrix[m][n] < min)
+                min = G.matrix[m][n];
+        }
+        sum += min;
+    }
+
+    //打印最小生成树
+    printf("PRIM(%c) = %d: ",G.vexs[start],sum);
+    for (int i = 0; i < index; ++i) {
+        printf("%c",prims[i]);
+    }
+    printf("\n");
+}
+
 int main(){
     Graph *pG;
     pG = create_graph();
     print_graph(*pG);
     DFSTraverse(*pG);
     BFS(*pG);
+    prim(*pG,0);
     return 0;
 }

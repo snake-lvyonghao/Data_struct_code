@@ -24,11 +24,18 @@ typedef struct _VNode{
 typedef struct _LGraph{
     int vexnum;             //图的顶点数目
     int edgnum;             //图的边的数目
-    VNode vexs[MAX];        //
+    VNode vexs[MAX];        //邻接表
 }LGraph;
 
+// 边的结构体
+typedef struct _edata
+{
+    char start; // 边的起点
+    char end;   // 边的终点
+    int weight; // 边的权重
+}EData;
 
-//返回ch 在 matrix矩阵的位置
+//返回ch 在 矩阵的位置
 static int get_postition(LGraph g, char ch)
 {
     int i;
@@ -162,7 +169,7 @@ void DFSTraverse(LGraph G){
         }
     }
     printf("\n");
-}
+}VEXS
 
 void BFS(LGraph G){
     int head = 0;
@@ -315,6 +322,111 @@ void prim(LGraph G, int start)
     printf("PRIM(%c)=%d: ", G.vexs[start].data, sum);
     for (i = 0; i < index; i++)
         printf("%c ", prims[i]);
+    printf("\n");
+}
+
+/*
+ * 获取图中的边
+ */
+EData* get_edges(LGraph G)
+{
+    int i,j;
+    int index=0;
+    ENode *node;
+    EData *edges;
+
+    edges = (EData*)malloc(G.edgnum*sizeof(EData));
+    for (i=0; i<G.vexnum; i++)
+    {
+        node = G.vexs[i].first_edge;
+        while (node != NULL)
+        {
+            if (node->ivex > i)
+            {
+                edges[index].start  = G.vexs[i].data;           // 起点
+                edges[index].end    = G.vexs[node->ivex].data;  // 终点
+                edges[index].weight = node->weight;             // 权
+                index++;
+            }
+            node = node->next_edge;
+        }
+    }
+
+    return edges;
+}
+
+/*
+ * 对边按照权值大小进行排序(由小到大)
+ */
+void sorted_edges(EData* edges, int elen)
+{
+    int i,j;
+
+    for (i=0; i<elen; i++)
+    {
+        for (j=i+1; j<elen; j++)
+        {
+            if (edges[i].weight > edges[j].weight)
+            {
+                // 交换"第i条边"和"第j条边"
+                EData tmp = edges[i];
+                edges[i] = edges[j];
+                edges[j] = tmp;
+            }
+        }
+    }
+}
+
+/*
+ * 获取i的终点
+ */
+int get_end(int vends[], int i)
+{
+    while (vends[i] != 0)
+        i = vends[i];
+    return i;
+}
+
+/*
+ * 克鲁斯卡尔（Kruskal)最小生成树
+ */
+void kruskal(LGraph G)
+{
+    int i,m,n,p1,p2;
+    int length;
+    int index = 0;          // rets数组的索引
+    int vends[MAX]={0};     // 用于保存"已有最小生成树"中每个顶点在该最小树中的终点。
+    EData rets[MAX];        // 结果数组，保存kruskal最小生成树的边
+    EData *edges;           // 图对应的所有边
+
+    // 获取"图中所有的边"
+    edges = get_edges(G);
+    // 将边按照"权"的大小进行排序(从小到大)
+    sorted_edges(edges, G.edgnum);
+
+    for (i=0; i<G.edgnum; i++)
+    {
+        p1 = get_position(G, edges[i].start);   // 获取第i条边的"起点"的序号
+        p2 = get_position(G, edges[i].end);     // 获取第i条边的"终点"的序号
+
+        m = get_end(vends, p1);                 // 获取p1在"已有的最小生成树"中的终点
+        n = get_end(vends, p2);                 // 获取p2在"已有的最小生成树"中的终点
+        // 如果m!=n，意味着"边i"与"已经添加到最小生成树中的顶点"没有形成环路
+        if (m != n)
+        {
+            vends[m] = n;                       // 设置m在"已有的最小生成树"中的终点为n
+            rets[index++] = edges[i];           // 保存结果
+        }
+    }
+    free(edges);
+
+    // 统计并打印"kruskal最小生成树"的信息
+    length = 0;
+    for (i = 0; i < index; i++)
+        length += rets[i].weight;
+    printf("Kruskal=%d: ", length);
+    for (i = 0; i < index; i++)
+        printf("(%c,%c) ", rets[i].start, rets[i].end);
     printf("\n");
 }
 

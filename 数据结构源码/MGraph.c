@@ -17,6 +17,13 @@ typedef struct _graph
     int matrix[MAX][MAX];       //邻接矩阵
 }Graph,*PGraph;
 
+//边的结构体
+typedef struct _graph
+{
+    char star;  //边的起点
+    char end;   //边的终点
+    int weight; //边的权重
+}EData;
 
 //返回ch 在 matrix矩阵的位置
 static int get_postition(Graph g, char ch)
@@ -284,6 +291,96 @@ void prim(Graph G,int start)
     printf("\n");
 }
 
+/*
+ * 获取图中的边
+ */
+EData* get_deges(Graph G){
+    int i,j;
+    int index = 0;
+    EData *edges;
+
+    edges = (EData*)malloc(G.vexnum * sizeof(EData));
+    for (int i = 0; i < G.vexnum; ++i) {
+        for (int j = i + 1; j < G.vexnum; ++j) {
+            if(G.matrix[i][j] != INF){
+                edges[index].star = G.vexs[i];
+                edges[index].end = G.vexs[j];
+                edges[index].weight = G.matrix[i][j];
+                index++;
+            }
+        }
+    }
+    return edges;
+}
+
+/*
+ * 对边按照权值大小进行排序（由小到大）
+ */
+void sorted_edges(EData* edges, int elen)
+{
+    int i,j;
+
+    for (int i = 0; i < elen; ++i) {
+        for (int j = i + 1; j < elen; ++j) {
+            if (edges[i].weight > edges[j].weight){
+                //交换"第i条边"和"第j条边"
+                EData tmp = edges[i];
+                edges[i] = edges[j];
+                edges[j] = tmp;
+            }
+        }
+    }
+}
+/*
+ * 获取i的终点
+ */
+int get_end(int vends[],int i){
+    while(vends[i] != 0){
+        i = vends[i];
+    }
+    return i;
+}
+/*
+ * 克鲁斯卡尔最小生成树
+ */
+void kruskal(Graph G){
+    int i,m,n,p1,p2;
+    int lenght;
+    int index = 0;          //rets数组的索引
+    int vends[MAX] = {0};   //用于保存 “已有最小生成树”中每个顶点在该最小树的终点
+    EData rets[MAX];        //对于结果数组保存kruskal最小生成树的1边
+    EData *edges;           //图对应的所有边
+
+    //获取图中所有边
+    edges = get_deges(G);
+    //按照权值从小到大排序
+    sorted_edges(edges,G.edgnum);
+
+    for (int i = 0; i < G.edgnum; ++i) {
+        p1 = get_postition(G,edges[i].star);        //获取第i条边的起点序号
+        p2 = get_postition((G,edges[i].end));       //获取第i条边的终点序号
+
+        m = get_end(vends,p1);                      //获取p1在最小生成树的终点
+        n = get_end(vends,p2);                      //获取p2早最小生成树的终点
+        //如果m不等于n意味着边i与最小生成树的顶点没有形成环路
+        if(m != n){
+            vends[m] = n;                           //设置m在最小生成树的终点为n
+            rets[index++] = edges[i];               //保存结果
+        }
+    }
+    free(edges);
+
+    //统计并打印克鲁斯卡尔最小生成树的结果
+    lenght = 0;
+    for (int i = 0; i < index; ++i) {
+        lenght += rets[i].weight;
+    }
+    printf("Kruskal=%d: "lenght);
+    for (int i = 0; i < index; ++i) {
+        printf("(%c%c)",rets[i].star,rets[i].end);
+        printf("\n");
+    }
+}
 int main(){
     Graph *pG;
     pG = create_graph();
@@ -291,5 +388,6 @@ int main(){
     DFSTraverse(*pG);
     BFS(*pG);
     prim(*pG,0);
+    kruskal(*pG);
     return 0;
 }

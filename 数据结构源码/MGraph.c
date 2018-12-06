@@ -18,7 +18,7 @@ typedef struct _graph
 }Graph,*PGraph;
 
 //边的结构体
-typedef struct _graph
+typedef struct _EdgeData
 {
     char star;  //边的起点
     char end;   //边的终点
@@ -358,7 +358,7 @@ void kruskal(Graph G){
 
     for (int i = 0; i < G.edgnum; ++i) {
         p1 = get_postition(G,edges[i].star);        //获取第i条边的起点序号
-        p2 = get_postition((G,edges[i].end));       //获取第i条边的终点序号
+        p2 = get_postition(G,edges[i].end);       //获取第i条边的终点序号
 
         m = get_end(vends,p1);                      //获取p1在最小生成树的终点
         n = get_end(vends,p2);                      //获取p2早最小生成树的终点
@@ -375,7 +375,7 @@ void kruskal(Graph G){
     for (int i = 0; i < index; ++i) {
         lenght += rets[i].weight;
     }
-    printf("Kruskal=%d: "lenght);
+    printf("Kruskal=%d: ",lenght);
     for (int i = 0; i < index; ++i) {
         printf("(%c%c)",rets[i].star,rets[i].end);
         printf("\n");

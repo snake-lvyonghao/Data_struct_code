@@ -59,6 +59,17 @@ void TraverseList(PNode List) {
     }
     printf("\n");
 }
+//逆序打印链表
+void TraverseListF(PNode List){
+    PNode  P = List->Next;      //首结点赋值给临时节点P
+    printf("遍历链表的值为：");
+    if (P == NULL)
+        printf("链表为空");
+    P = P->Next;
+    TraverseListF(P);
+    printf("%d ", P->Element);
+    printf("\n");
+}
 
 //算法2.8 单链表实现插入
 void ListInsert(PNode L, int i,int e) {
@@ -192,18 +203,18 @@ void ListDdelet(DuNode L,int i){
 }
 //    主函数
 int main() {
-//    PNode List = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
-//    ListInsert(List,3,5);   //在第1个位置前加入结点值为5
-//    TraverseList(List);     //打印链表
+    PNode List = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
+    ListInsert(List,3,5);   //在第1个位置前加入结点值为5
+    TraverseListF(List);     //打印链表
 //    PNode List2 = CreateList();    //创建一个指针，使其指向新创建的链表的头指针
 //    MergeList_L(List,List2);
 //    TraverseList(List);     //打印链表
 //    ListDelet(List,3); //删除结点
 //    TraverseList(List);     //打印链表
-    DuNode DList = CreativeDuList(); //创建双向链表
-    ListDinsert(DList,2,5);
-    TraverseDlist(DList);   //打印双向链表
-    ListDdelet(DList,3);
-    TraverseDlist(DList);   //打印双向链表
+//    DuNode DList = CreativeDuList(); //创建双向链表
+//    ListDinsert(DList,2,5);
+//    TraverseDlist(DList);   //打印双向链表
+//    ListDdelet(DList,3);
+//    TraverseDlist(DList);   //打印双向链表
     return 0;
 }

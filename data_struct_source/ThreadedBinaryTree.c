@@ -1,3 +1,10 @@
+//BinaryThreadTree  线索二叉树
+// 1.用户前序输入二叉树数据
+// 2.对二叉树进行线索化 lchild ltag Data rtag rchild
+//   ltag/rtag 左右标记位  0:有孩子结点 link  1: 存储前驱或后继结点线索 Thread
+// 3.中序迭代遍历输出二叉树数据
+
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -132,5 +139,7 @@ int main()
     printf("中序遍历输出结果为：");
     InOrderTraverse(P);                        //中序遍历二叉树，迭代输出
     printf("\n");
+
+
     return 0;
 }

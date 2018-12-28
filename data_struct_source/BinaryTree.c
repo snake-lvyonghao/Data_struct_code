@@ -96,16 +96,13 @@ int TreeDeep(BiTree T)
 
 int Leafcount(BiTree T,int num)
 {
-if(T)
-{
-if(T->lChild ==NULL &&T->rChlid==NULL)
-num++;
-Leafcount(T->lChild,num);
-Leafcount(T->rChlid,num);
-
-
-}
-return num;
+    if(T){
+        if(T->lChild ==NULL &&T->rChlid==NULL)
+            num++;
+            Leafcount(T->lChild,num);
+            Leafcount(T->rChlid,num);
+    }
+    return num;
 }
 //主函数
 int main(void)

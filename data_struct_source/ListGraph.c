@@ -539,9 +539,6 @@ void main()
 
 //     自定义"图"(自己输入数据)
     pG = create_lgraph();
-    // 采用已有的"图"
-//    pG = create_example_lgraph();
-
     //print_lgraph(*pG);    // 打印图
     //DFSTraverse(*pG);     // 深度优先遍历
     //BFS(*pG);             // 广度优先遍历

@@ -26,11 +26,10 @@ typedef struct _EdgeData
 }EData;
 
 //返回ch 在 matrix矩阵的位置
-static int get_postition(Graph g, char ch)
-{
+static int get_postition(Graph g, char ch) {
     int i;
-    for(i = 0; i < g.vexnum; i++){
-        if(g.vexs[i] == ch)
+    for (i = 0; i < g.vexnum; i++) {
+        if (g.vexs[i] == ch)
             return i;
     }
     return -1;
@@ -54,7 +53,7 @@ Graph* create_graph(){
     int i,j,p1,p2,weight;
     Graph* pG;
 
-    //输入定点数和边数
+    //输入顶点数和边数
     printf("输入顶点数");
     scanf("%d",&v);
     printf("输入边数");
@@ -276,7 +275,7 @@ void prim(Graph G,int start)
         n = get_postition(G,prims[i]);
         //在vexs【0.。。i】中，找出到j的权值最小的顶点
         for (int j = 0; j < i; ++j) {
-            m = get_postition(G,prims[i]);
+            m = get_postition(G,prims[j]);
             if(G.matrix[m][n] < min)
                 min = G.matrix[m][n];
         }
@@ -384,10 +383,10 @@ void kruskal(Graph G){
 int main(){
     Graph *pG;
     pG = create_graph();
-    print_graph(*pG);
-    DFSTraverse(*pG);
-    BFS(*pG);
+//    print_graph(*pG);
+
+//    BFS(*pG);
     prim(*pG,0);
-    kruskal(*pG);
+//    kruskal(*pG);
     return 0;
 }

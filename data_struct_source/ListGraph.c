@@ -537,9 +537,9 @@ void main()
     int dist[MAX] = {0};
     LGraph* pG;
 
-//     自定义"图"(自己输入数据)
+    // 自定义"图"(自己输入数据)
     pG = create_lgraph();
-    //print_lgraph(*pG);    // 打印图
+    print_lgraph(*pG);    // 打印图
     //DFSTraverse(*pG);     // 深度优先遍历
     //BFS(*pG);             // 广度优先遍历
     //prim(*pG, 0);         // prim算法生成最小生成树

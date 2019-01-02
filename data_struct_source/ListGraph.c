@@ -1,64 +1,67 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
 
-#define MAX 100
-#define isLetter(a) ((((a) >= 'a') && ((a) <= 'z')) || (((a) >= 'A') && ((a) <= 'Z')))      //a - A,z - Z
+#define MAX         100
+#define INF         (~(0x1<<31))        // 最大值(即0X7FFFFFFF)
+#define isLetter(a) ((((a)>='a')&&((a)<='z')) || (((a)>='A')&&((a)<='Z')))
+#define LENGTH(a)   (sizeof(a)/sizeof(a[0]))
 
-//邻接表中表对应的链表顶点
+// 邻接表中表对应的链表的顶点
 typedef struct _ENode
 {
-    int ivex;                   //该边所指向的顶点的的位置
-    struct _ENode *next_edge;   //指向下一条弧的指针
-}ENode,*PENode;
+    int ivex;                   // 该边的顶点的位置
+    int weight;                 // 该边的权
+    struct _ENode *next_edge;   // 指向下一条弧的指针
+}ENode, *PENode;
 
-//邻接表中表的顶点
-typedef struct _VNode{
-    char data;          //顶点信息
-    ENode *first_edge;  //指向第一条依附该顶点的的弧
+// 邻接表中表的顶点
+typedef struct _VNode
+{
+    char data;              // 顶点信息
+    ENode *first_edge;      // 指向第一条依附该顶点的弧
 }VNode;
 
-//邻接表
-typedef struct _LGraph{
-    int vexnum;             //图的顶点数目
-    int edgnum;             //图的边的数目
-    VNode vexs[MAX];        //邻接表
+// 邻接表
+typedef struct _LGraph
+{
+    int vexnum;             // 图的顶点的数目
+    int edgnum;             // 图的边的数目
+    VNode vexs[MAX];
 }LGraph;
 
-// 边的结构体
-typedef struct _edata
-{
-    char start; // 边的起点
-    char end;   // 边的终点
-    int weight; // 边的权重
-}EData;
-
-//返回ch 在 矩阵的位置
-static int get_postition(LGraph g, char ch)
+/*
+ * 返回ch在matrix矩阵中的位置
+ */
+static int get_position(LGraph G, char ch)
 {
     int i;
-    for(i = 0; i < g.vexnum; i++){
-        if(g.vexs[i].data == ch)
+    for(i=0; i<G.vexnum; i++)
+        if(G.vexs[i].data==ch)
             return i;
-    }
     return -1;
 }
 
-//读入一个字符
-static char read_char(){
+/*
+ * 读取一个输入字符
+ */
+static char read_char()
+{
     char ch;
 
-    do{
+    do {
         ch = getchar();
-    }while(!isLetter(ch));
+    } while(!isLetter(ch));
 
     return ch;
 }
 
-//将node链接到list末尾
-static void link_last(ENode *list,ENode *node){
+/*
+ * 将node链接到list的末尾
+ */
+static void link_last(ENode *list, ENode *node)
+{
     ENode *p = list;
 
     while(p->next_edge)
@@ -66,7 +69,9 @@ static void link_last(ENode *list,ENode *node){
     p->next_edge = node;
 }
 
-//创建图
+/*
+ * 创建邻接表对应的图(自己输入)
+ */
 LGraph* create_lgraph()
 {
     char c1, c2;
@@ -137,65 +142,89 @@ LGraph* create_lgraph()
     return pG;
 }
 
-//深度优先搜索遍历图的递归实现
-static void DFS(LGraph G,int i,int *visited)
+// 边的结构体
+typedef struct _edata
 {
+    char start; // 边的起点
+    char end;   // 边的终点
+    int weight; // 边的权重
+}EData;
+
+/*
+ * 深度优先搜索遍历图的递归实现
+ */
+static void DFS(LGraph G, int i, int *visited)
+{
+    int w;
     ENode *node;
+
     visited[i] = 1;
-    printf("%c ",G.vexs[i].data);
+    printf("%c ", G.vexs[i].data);
     node = G.vexs[i].first_edge;
-    //遍历该顶点的所有邻接结点，没有访问过则继续往下走
-    while (node != NULL){
-        if(!visited[node->ivex])
-            DFS(G,node->ivex,visited);
+    while (node != NULL)
+    {
+        if (!visited[node->ivex])
+            DFS(G, node->ivex, visited);
         node = node->next_edge;
     }
 }
 
-//深度优先搜索遍历图
-void DFSTraverse(LGraph G){
+/*
+ * 深度优先搜索遍历图
+ */
+void DFSTraverse(LGraph G)
+{
     int i;
-    int visited[MAX];       //顶点访问标记
+    int visited[MAX];       // 顶点访问标记
 
-    //初始化所有的顶点都没有被访问
-    for(i = 0; i < G.vexnum; i++){
+    // 初始化所有顶点都没有被访问
+    for (i = 0; i < G.vexnum; i++)
         visited[i] = 0;
-    }
 
     printf("DFS: ");
-    for (i = 0; i < G.vexnum; i++){
-        if(!visited[i]){
-            DFS(G,i,visited);
-        }
+    for (i = 0; i < G.vexnum; i++)
+    {
+        if (!visited[i])
+            DFS(G, i, visited);
     }
     printf("\n");
-}VEXS
+}
 
-void BFS(LGraph G){
+/*
+ * 广度优先搜索（类似于树的层次遍历）
+ */
+void BFS(LGraph G)
+{
     int head = 0;
     int rear = 0;
-    int queue[MAX]; //辅助队列
-    int visited[MAX];   //顶点访问标记
-    int i,j,k;
+    int queue[MAX];     // 辅组队列
+    int visited[MAX];   // 顶点访问标记
+    int i, j, k;
     ENode *node;
-    for(i = 0;i < G.vexnum; i++){
+
+    for (i = 0; i < G.vexnum; i++)
         visited[i] = 0;
-    }
+
     printf("BFS: ");
-    for(i = 0;i < G.vexnum;i++){
-        if(!visited[i]){
+    for (i = 0; i < G.vexnum; i++)
+    {
+        if (!visited[i])
+        {
             visited[i] = 1;
-            printf("%c",G.vexs[i].data);
-            queue[rear++] = i;  //入队列
+            printf("%c ", G.vexs[i].data);
+            queue[rear++] = i;  // 入队列
         }
-        while (head != rear){
-            j = queue[head++];  //出队列
+        while (head != rear)
+        {
+            j = queue[head++];  // 出队列
             node = G.vexs[j].first_edge;
-            while (node ! =NULL){
+            while (node != NULL)
+            {
                 k = node->ivex;
-                if(!visited[k]){
+                if (!visited[k])
+                {
                     visited[k] = 1;
-                    printf("%c"G.vexs[k].data);
+                    printf("%c ", G.vexs[k].data);
                     queue[rear++] = k;
                 }
                 node = node->next_edge;
@@ -204,27 +233,33 @@ void BFS(LGraph G){
     }
     printf("\n");
 }
-//打印矩形队列图
+
+/*
+ * 打印邻接表图
+ */
 void print_lgraph(LGraph G)
 {
     int i,j;
     ENode *node;
 
     printf("List Graph:\n");
-    for(i = 0; i < G.vexnum; i++){
-        printf("%d(%c):",i,G.vexs[i].data);
+    for (i = 0; i < G.vexnum; i++)
+    {
+        printf("%d(%c): ", i, G.vexs[i].data);
         node = G.vexs[i].first_edge;
-        while (node != NULL){
-            printf("%d(%c):",node->ivex,G.vexs[node->ivex].data);
+        while (node != NULL)
+        {
+            printf("%d(%c) ", node->ivex, G.vexs[node->ivex].data);
             node = node->next_edge;
         }
         printf("\n");
     }
 }
+
 /*
  * 获取G中边<start, end>的权值；若start和end不是连通的，则返回无穷大。
  */
-int getWeight(LGraph G, int start, int end)
+int get_weight(LGraph G, int start, int end)
 {
     ENode *node;
 
@@ -262,7 +297,7 @@ void prim(LGraph G, int start)
     // 初始化"顶点的权值数组"，
     // 将每个顶点的权值初始化为"第start个顶点"到"该顶点"的权值。
     for (i = 0; i < G.vexnum; i++ )
-        weights[i] = getWeight(G, start, i);
+        weights[i] = get_weight(G, start, i);
 
     for (i = 0; i < G.vexnum; i++)
     {
@@ -294,7 +329,7 @@ void prim(LGraph G, int start)
         for (j = 0 ; j < G.vexnum; j++)
         {
             // 获取第k个顶点到第j个顶点的权值
-            tmp = getWeight(G, k, j);
+            tmp = get_weight(G, k, j);
             // 当第j个节点没有被处理，并且需要更新时才被更新。
             if (weights[j] != 0 && tmp < weights[j])
                 weights[j] = tmp;
@@ -312,7 +347,7 @@ void prim(LGraph G, int start)
         for (j = 0; j < i; j++)
         {
             m = get_position(G, prims[j]);
-            tmp = getWeight(G, m, n);
+            tmp = get_weight(G, m, n);
             if (tmp < min)
                 min = tmp;
         }
@@ -430,12 +465,89 @@ void kruskal(LGraph G)
     printf("\n");
 }
 
-int main(){
-    LGraph *pG;
+/*
+ * Dijkstra最短路径。
+ * 即，统计图(G)中"顶点vs"到其它各个顶点的最短路径。
+ *
+ * 参数说明：
+ *        G -- 图
+ *       vs -- 起始顶点(start vertex)。即计算"顶点vs"到其它顶点的最短路径。
+ *     prev -- 前驱顶点数组。即，prev[i]的值是"顶点vs"到"顶点i"的最短路径所经历的全部顶点中，位于"顶点i"之前的那个顶点。
+ *     dist -- 长度数组。即，dist[i]是"顶点vs"到"顶点i"的最短路径的长度。
+ */
+void dijkstra(LGraph G, int vs, int prev[], int dist[])
+{
+    int i,j,k;
+    int min;
+    int tmp;
+    int flag[MAX];      // flag[i]=1表示"顶点vs"到"顶点i"的最短路径已成功获取。
+
+    // 初始化
+    for (i = 0; i < G.vexnum; i++)
+    {
+        flag[i] = 0;                    // 顶点i的最短路径还没获取到。
+        prev[i] = 0;                    // 顶点i的前驱顶点为0。
+        dist[i] = get_weight(G, vs, i);  // 顶点i的最短路径为"顶点vs"到"顶点i"的权。
+    }
+
+    // 对"顶点vs"自身进行初始化
+    flag[vs] = 1;
+    dist[vs] = 0;
+
+    // 遍历G.vexnum-1次；每次找出一个顶点的最短路径。
+    for (i = 1; i < G.vexnum; i++)
+    {
+        // 寻找当前最小的路径；
+        // 即，在未获取最短路径的顶点中，找到离vs最近的顶点(k)。
+        min = INF;
+        for (j = 0; j < G.vexnum; j++)
+        {
+            if (flag[j]==0 && dist[j]<min)
+            {
+                min = dist[j];
+                k = j;
+            }
+        }
+        // 标记"顶点k"为已经获取到最短路径
+        flag[k] = 1;
+
+        // 修正当前最短路径和前驱顶点
+        // 即，当已经"顶点k的最短路径"之后，更新"未获取最短路径的顶点的最短路径和前驱顶点"。
+        for (j = 0; j < G.vexnum; j++)
+        {
+            tmp = get_weight(G, k, j);
+            tmp = (tmp==INF ? INF : (min + tmp)); // 防止溢出
+            if (flag[j] == 0 && (tmp  < dist[j]) )
+            {
+                dist[j] = tmp;
+                prev[j] = k;
+            }
+        }
+    }
+
+    // 打印dijkstra最短路径的结果
+    printf("dijkstra(%c): \n", G.vexs[vs].data);
+    for (i = 0; i < G.vexnum; i++)
+        printf("  shortest(%c, %c)=%d\n", G.vexs[vs].data, G.vexs[i].data, dist[i]);
+}
+
+void main()
+{
+    int prev[MAX] = {0};
+    int dist[MAX] = {0};
+    LGraph* pG;
+
+//     自定义"图"(自己输入数据)
     pG = create_lgraph();
-    print_lgraph(*pG);
-    DFSTraverse(*pG);
-    BFS(*pG);
-    prim(*pG, 0);           // prim算法生成最小生成树
-    return 0;
+    // 采用已有的"图"
+//    pG = create_example_lgraph();
+
+    //print_lgraph(*pG);    // 打印图
+    //DFSTraverse(*pG);     // 深度优先遍历
+    //BFS(*pG);             // 广度优先遍历
+    //prim(*pG, 0);         // prim算法生成最小生成树
+    //kruskal(*pG);         // kruskal算法生成最小生成树
+
+    // dijkstra算法获取"第4个顶点"到其它各个顶点的最短距离
+    dijkstra(*pG, 3, prev, dist);
 }

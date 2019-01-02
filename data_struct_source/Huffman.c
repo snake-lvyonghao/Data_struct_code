@@ -19,7 +19,7 @@ void selecte(HuffmanTree *huffmanTree,int n,int *s1,int *s2){
     int i = 0;
     //记录最小权值
     int min;
-    //便利全部节点，找出单节点
+    //遍历全部节点，找出单节点
     for(i = 1;i <= n;i++){
         //如果此结点的父亲没有，那麽把结点好赋值给min，跳出循环
         if((*huffmanTree)[i].parent == 0){

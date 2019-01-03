@@ -94,15 +94,16 @@ int TreeDeep(BiTree T)
 //求二叉树叶子结点个数
 
 
-int Leafcount(BiTree T,int num)
-{
-    if(T){
-        if(T->lChild ==NULL &&T->rChlid==NULL)
-            num++;
-            Leafcount(T->lChild,num);
-            Leafcount(T->rChlid,num);
+int Count(BiTree top){
+    if(top == NULL){
+        return 0;
     }
-    return num;
+    else if ((top->lChild==NULL) && (top->rChlid==NULL)){
+        return 1;
+    }
+    else{
+        return Count(top->lChild)+Count(top->rChlid);
+    }
 }
 //主函数
 int main(void)
@@ -124,7 +125,7 @@ int main(void)
     deepth=TreeDeep(T);
     printf("树的深度为:%d",deepth);
     printf("\n");
-    Leafcount(T,num);
+    Count(T);
     printf("树的叶子结点个数为:%d",num);
     printf("\n");
     return 0;

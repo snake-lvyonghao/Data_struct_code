@@ -29,6 +29,7 @@ void MergingSort(int sort[], int start, int end, int *temp)
             j_start++;
         }
     }
+    //当一个序列为空，直接添加另一数列剩下的元素
     while (i_start <= i_end)
     {
         temp[length] = sort[i_start];
